@@ -12,7 +12,7 @@
   networking.hostName = "gorto-desktop";
   networking.networkmanager.enable = true;
 
-  time.timeZone = "America/New_York"; # TODO: adjust if wrong
+  time.timeZone = "America/Denver";
 
   # ---- nvidia (RTX 3070 Ti) ----
   services.xserver.videoDrivers = [ "nvidia" ];
