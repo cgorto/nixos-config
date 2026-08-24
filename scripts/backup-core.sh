@@ -42,6 +42,7 @@ $RSYNC \
   ./.var/app/com.obsproject.Studio/config \
   ./.local/share/fonts \
   ./.claude ./.claude.json ./.codex ./.pi ./.opencode ./.gemini \
+  ./.claude-science/orgs ./.claude-science/runtime ./.claude-science/seed-assets \
   "$DEST/" 2>/dev/null || true
 
 # --- projects outside ~/dev ---
@@ -58,4 +59,4 @@ echo ">>> NOT backed up (survives in the home subvolume, or intentionally droppe
 echo "    kept in-place: ~/dev ~/Downloads ~/.local/share/Steam"
 echo "    dropped:       ~/Unity ~/Games ~/Calibre* recordings Chrome .cache Trash toolchains"
 echo
-echo ">>> reminder: ~/.claude-science (15G) was excluded - add it manually if needed"
+echo ">>> note: ~/.claude-science/conda (15G) excluded - it's regenerable conda envs"
