@@ -1,0 +1,17 @@
+# swayidle — lock and monitor-sleep policy.
+# Times are generous because this is a gaming desktop: controllers do NOT
+# reset Wayland idle the way keyboard/mouse do, so tight timeouts would
+# lock mid-game. Games/video players that use the idle-inhibit protocol
+# (mpv, browsers) suspend these automatically.
+
+# 15 min idle: lock.
+timeout 900 'swaylock -f'
+
+# 20 min idle: monitors off (niri turns them back on at any input).
+timeout 1200 'niri msg action power-off-monitors'
+
+# Lock BEFORE the machine suspends, so waking lands on the lock screen.
+before-sleep 'swaylock -f'
+
+# Honor `loginctl lock-session` (this is what the Mod+Alt+L bind sends).
+lock 'swaylock -f'

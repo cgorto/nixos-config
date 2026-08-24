@@ -32,6 +32,7 @@
   };
 
   # ---- audio ----
+  security.rtkit.enable = true; # realtime priority for pipewire
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -43,6 +44,21 @@
   zramSwap.enable = true;
   hardware.bluetooth.enable = true;
   services.printing.enable = true;
+  services.fwupd.enable = true;
+
+  # access the NTFS drives (970EVO data drive, windows disk)
+  boot.supportedFilesystems = [ "ntfs" ];
+  services.udisks2.enable = true;
+
+  # electron apps (discord, obsidian, zed) run native wayland
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono # waybar + ghostty configs depend on this
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-color-emoji
+  ];
 
   # ---- dev quality of life ----
   programs.nix-ld.enable = true; # random downloaded binaries just work

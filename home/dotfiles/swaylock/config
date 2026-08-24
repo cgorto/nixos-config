@@ -1,0 +1,31 @@
+# swaylock — themed to the e7kpl8 rice (teal ring, coral on wrong password).
+ignore-empty-password
+show-failed-attempts
+
+# The wallpaper itself, so locking feels like the desktop exhaling.
+image=/home/gorto/Pictures/wallpapers/nature/wallhaven-e7kpl8.png
+scaling=fill
+
+indicator-radius=90
+indicator-thickness=8
+
+inside-color=11111bcc
+line-color=00000000
+separator-color=00000000
+text-color=cdd6f4
+
+ring-color=4fa8c4
+key-hl-color=ef5f68
+bs-hl-color=a44f63
+
+ring-ver-color=3d5664
+inside-ver-color=11111bcc
+text-ver-color=cdd6f4
+
+ring-wrong-color=ef5f68
+inside-wrong-color=11111bcc
+text-wrong-color=ef5f68
+
+ring-clear-color=a44f63
+inside-clear-color=11111bcc
+text-clear-color=cdd6f4

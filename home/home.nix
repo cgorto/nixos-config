@@ -12,6 +12,22 @@
     "mako".source = ./dotfiles/mako;
     "ghostty".source = ./dotfiles/ghostty;
     "helix".source = ./dotfiles/helix;
+    "swayidle".source = ./dotfiles/swayidle;
+    "swaylock".source = ./dotfiles/swaylock;
+  };
+
+  # polkit auth agent (niri has no DE providing one; needed for GUI privilege prompts)
+  systemd.user.services.polkit-gnome-agent = {
+    Unit = {
+      Description = "polkit-gnome authentication agent";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 
   # ---- shell & dev ----
@@ -38,6 +54,7 @@
     # desktop
     swaylock
     swayidle
+    swaybg # spawned by niri config for wallpaper
     xwayland-satellite # xwayland support for niri
     obsidian
     vlc
@@ -45,6 +62,11 @@
     discord
     spotify
     blender
+    audacity
+    orca-slicer
+    blockbench
+    vintagestory
+    zed-editor
     # dev (project-specific stuff goes in per-project flakes instead)
     helix
     ghostty
