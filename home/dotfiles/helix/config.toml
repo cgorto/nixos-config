@@ -1,0 +1,11 @@
+theme = "catppuccin_mocha"
+
+[editor]
+bufferline = "multiple"
+color-modes = true
+cursorline = true
+
+[editor.inline-diagnostics]
+cursor-line = "hint"
+other-lines = "error"
+

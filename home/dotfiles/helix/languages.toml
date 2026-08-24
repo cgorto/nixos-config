@@ -1,0 +1,37 @@
+[[language]]
+name = "rust"
+auto-format = true
+
+[[language]]
+name = "cpp"
+auto-format = true
+formatter = { command = "clang-format", args = ["-style=file"] }
+
+[[language]]
+name = "glsl"
+scope = "source.glsl"
+file-types = [
+  "glsl",
+  "vert",
+  "frag",
+  "comp",
+  "geom",
+  "tesc",
+  "tese",
+  { glob = "*.vert.glsl" },
+  { glob = "*.frag.glsl" },
+  { glob = "*.comp.glsl" },
+  { glob = "*.VTX.glsl" },
+  { glob = "*.FRG.glsl" },
+  { glob = "*.COMP.glsl" },
+]
+comment-token = "//"
+indent = { tab-width = 4, unit = "    " }
+
+[[language]]
+name = "lua"
+indent = {tab-width = 4, unit = "    "}
+
+[language-server.lua-language-server.config.Lua]
+runtime.version = "LuaJIT"
+workspace.library = ["/usr/lib/lua-language-server/meta/3rd/love2d/library"]

@@ -1,0 +1,26 @@
+# mako — themed to the e7kpl8 wallpaper (teal ridges, coral sun).
+font=JetBrainsMono Nerd Font 11
+background-color=#11111bee
+text-color=#cdd6f4
+border-color=#4fa8c4
+border-size=2
+border-radius=6
+padding=12
+margin=10
+width=380
+default-timeout=6000
+# Apps can request their own timeout (niri's screenshot notif asks for
+# "never expire"). Ignore that and always use default-timeout...
+ignore-timeout=1
+max-icon-size=48
+
+# Show notifications on the main monitor.
+output=DP-1
+
+# ...except criticals, which still stick until dismissed.
+[urgency=critical]
+border-color=#ef5f68
+default-timeout=0
+
+[mode=do-not-disturb]
+invisible=1

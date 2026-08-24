@@ -1,0 +1,402 @@
+// niri config — starter, mirrors your current Plasma layout.
+// Docs: https://yalter.github.io/niri/
+
+input {
+    keyboard {
+        xkb {
+            // layout "us"
+        }
+        repeat-delay 400
+        repeat-rate 40
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+    }
+
+    mouse {
+        // accel-profile "flat"
+    }
+
+    // Focus follows mouse is off by default; uncomment if you want it.
+    // focus-follows-mouse max-scroll-amount="0%"
+
+    warp-mouse-to-focus
+}
+
+// Your monitors, as Plasma has them today.
+output "DP-1" {
+    // NOTE: must match `niri msg outputs` EXACTLY. A wrong string is not an
+    // error — niri silently falls back to the preferred mode (here: 60Hz).
+    mode "3840x2160@179.977"
+    scale 1.5
+    position x=1920 y=0
+    // VRR DISABLED 7-29: caused the monitor to drop/re-establish its link.
+    // Common on NVIDIA + high-refresh DisplayPort panels. Re-enable only if
+    // you want to retest, and expect flicker.
+    // variable-refresh-rate on-demand=true
+}
+
+output "HDMI-A-1" {
+    mode "1920x1080@60.000"  // verified against `niri msg outputs`
+    scale 1
+    position x=0 y=170
+}
+
+layout {
+    gaps 8
+    center-focused-column "never"
+
+    // Transparent so the backdrop wallpaper (swaybg, placed within the
+    // backdrop by the layer-rule below) shows through the gaps and behind
+    // workspace switches. The overview backdrop is the wallpaper itself.
+    background-color "transparent"
+
+    // Bare flag: uncomment to always center a lone column on a workspace.
+    // (Presence = on. Do NOT write `false`, it would still enable it.)
+    // always-center-single-column
+
+    // Widths cycled by Mod+R.
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.5; }
+
+    focus-ring {
+        width 3
+        // Gradient sampled from the wallpaper (teal ridges -> coral sun),
+        // spanning the whole workspace view: the ring's hue shifts as a
+        // window travels across the strip.
+        active-gradient from="#4fa8c4" to="#ef5f68" angle=45 relative-to="workspace-view"
+        inactive-color "#505050"
+    }
+
+    // Subtle shadow under tiles adds depth without the blur cost.
+    shadow {
+        softness 24
+        spread 3
+        offset x=0 y=4
+        color "#0009"
+    }
+
+    // Preview shown while Mod+dragging a window to a new slot.
+    insert-hint {
+        color "#7fc8ff60"
+    }
+
+    // Tabbed columns (Mod+W): a fat bar across the top of the column, one
+    // segment per window, so it reads like real browser tabs.
+    tab-indicator {
+        width 10
+        gap 6
+        // Span the full column width instead of the default half.
+        length total-proportion=1.0
+        position "top"
+        // Count the bar in the column's size so it never overlays a neighbour.
+        place-within-column
+        gaps-between-tabs 4
+        corner-radius 5
+        active-color "#7fc8ff"
+        inactive-color "#4a4a52"
+        urgent-color "#ff6b6b"
+        // Don't draw a lone tab on a 1-window column.
+        hide-when-single-tab
+    }
+
+    struts {
+        // left 64
+        // right 64
+    }
+}
+
+// The systemd user manager and the D-Bus activation environment start before
+// niri, so neither has WAYLAND_DISPLAY or DISPLAY. D-Bus activated services
+// such as xdg-desktop-portal-gtk then fail with "cannot open display", which
+// breaks all portal dialogs (file chooser, screen share). Push the variables
+// into both environments at startup.
+// https://github.com/YaLTeR/niri/wiki/Important-Software
+spawn-at-startup "sh" "-c" "systemctl --user import-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE; dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE; systemctl --user reset-failed xdg-desktop-portal-gtk.service xdg-desktop-portal.service; systemctl --user restart xdg-desktop-portal.service"
+
+// Xwayland support (Chrome/Steam/older apps). :0 is set in environment below.
+spawn-at-startup "xwayland-satellite"
+
+// Status bar (configured: ~/.config/waybar/{config.jsonc,style.css}).
+spawn-at-startup "waybar"
+
+// Notifications (themed in ~/.config/mako/config).
+spawn-at-startup "mako"
+
+// Idle policy: 15 min -> lock, 20 min -> monitors off, lock on suspend.
+// Config: ~/.config/swayidle/config. swaylock theme: ~/.config/swaylock/config.
+spawn-at-startup "swayidle" "-w" "-C" "/home/gorto/.config/swayidle/config"
+
+// Wallpaper: wallhaven-e7kpl8 (teal ridges, coral sun). Both outputs, fill.
+spawn-at-startup "swaybg" "-i" "/home/gorto/Pictures/wallpapers/nature/wallhaven-e7kpl8.png" "-m" "fill"
+
+prefer-no-csd
+screenshot-path "~/Pictures/Screenshots/niri-%Y-%m-%d %H-%M-%S.png"
+
+environment {
+    // NVIDIA-friendly bits. Remove if you ever move off the proprietary driver.
+    LIBVA_DRIVER_NAME "nvidia"
+    __GLX_VENDOR_LIBRARY_NAME "nvidia"
+    NVD_BACKEND "direct"
+    DISPLAY ":0"
+
+    // Qt/KDE apps (Dolphin, KeePassXC...) lost Plasma's theming daemon when
+    // we left Plasma. This tells them to read ~/.config/kdeglobals directly
+    // (via plasma-integration), restoring Breeze Dark + icons.
+    QT_QPA_PLATFORMTHEME "kde"
+}
+
+animations {
+    slowdown 0.8
+
+    // Springs feel better than easings for the big spatial moves: they
+    // carry momentum, which matters a lot on a scrolling layout.
+    workspace-switch {
+        spring damping-ratio=1.0 stiffness=1000 epsilon=0.0001
+    }
+
+    horizontal-view-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+
+    window-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+
+    // Slight scale-in on open reads as "this is new" without being slow.
+    window-open {
+        duration-ms 150
+        curve "ease-out-expo"
+    }
+
+    window-close {
+        duration-ms 120
+        curve "ease-out-quad"
+    }
+
+    overview-open-close {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+}
+
+// Global blur tuning. Only applies where a rule opts in (below).
+blur {
+    passes 3
+    offset 3
+    noise 0.02
+    saturation 1.5
+}
+
+// Blur behind the launcher — the one place it's pure win.
+layer-rule {
+    match namespace="^launcher$"
+    background-effect {
+        blur true
+    }
+}
+
+// Blur behind waybar too.
+layer-rule {
+    match namespace="^waybar$"
+    background-effect {
+        blur true
+    }
+}
+
+// Put the wallpaper INTO the backdrop: in the overview and during workspace
+// switches, windows float over it instead of it being glued to each
+// workspace. (swaybg's layer namespace is "wallpaper".)
+layer-rule {
+    match namespace="^wallpaper$"
+    place-within-backdrop true
+}
+
+// ---- Window rules -------------------------------------------------------
+
+window-rule {
+    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+    block-out-from "screencast"
+}
+
+// Safety net: helper apps that are meant to be invisible but insist on
+// mapping a window. Float + shrink them so they never eat a tile slot.
+// (xwaylandvideobridge is now disabled at autostart; this is belt-and-braces
+// in case a similar KDE leftover shows up.)
+window-rule {
+    match app-id=r#"^xwaylandvideobridge$"#
+    open-floating true
+    default-column-width { fixed 1; }
+    default-window-height { fixed 1; }
+    opacity 0.0
+}
+
+// VRR opt-in rule, parked while VRR is off on DP-1.
+// window-rule {
+//     match app-id=r#"^steam_app_"#
+//     match app-id=r#"^gamescope$"#
+//     match app-id=r#"^mpv$"#
+//     variable-refresh-rate true
+// }
+
+window-rule {
+    geometry-corner-radius 6
+    clip-to-geometry true
+    // Draw the focus ring behind the window so it doesn't tint
+    // semitransparent terminals.
+    draw-border-with-background false
+}
+
+// Dim unfocused windows slightly — makes "where am I" obvious at a glance
+// on a 4K screen with several columns visible.
+window-rule {
+    match is-focused=false
+    opacity 0.94
+}
+
+window-rule {
+    match is-focused=true
+    opacity 1.0
+}
+
+// Games / fullscreen apps: don't let them be tiled awkwardly.
+window-rule {
+    match is-floating=true
+    shadow { on; }
+}
+
+// ---- Key bindings -------------------------------------------------------
+
+binds {
+    Mod+Shift+Slash { show-hotkey-overlay; }
+
+
+    Mod+Return   hotkey-overlay-title="Terminal: ghostty" { spawn "ghostty"; }
+    Mod+Shift+Return hotkey-overlay-title="Terminal (fallback): foot" { spawn "foot"; }
+    Mod+D        hotkey-overlay-title="Launcher: fuzzel" { spawn "fuzzel"; }
+    Mod+Q        { close-window; }
+    Mod+B        hotkey-overlay-title="Browser: Chrome" { spawn "flatpak" "run" "com.google.Chrome"; }
+
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+    XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+
+    // Focus: hjkl and arrows both. Vertical focus wraps within the column
+    // (bottom -> top and back), which is what makes tab cycling feel right.
+    Mod+H     { focus-column-left; }
+    Mod+J     hotkey-overlay-title="Next window in column (wraps)" { focus-window-down-or-top; }
+    Mod+K     hotkey-overlay-title="Previous window in column (wraps)" { focus-window-up-or-bottom; }
+    Mod+L     { focus-column-right; }
+    Mod+Left  { focus-column-left; }
+    Mod+Down  { focus-window-down-or-top; }
+    Mod+Up    { focus-window-up-or-bottom; }
+    Mod+Right { focus-column-right; }
+
+    // Move.
+    Mod+Ctrl+H     { move-column-left; }
+    Mod+Ctrl+J     { move-window-down; }
+    Mod+Ctrl+K     { move-window-up; }
+    Mod+Ctrl+L     { move-column-right; }
+    Mod+Ctrl+Left  { move-column-left; }
+    Mod+Ctrl+Down  { move-window-down; }
+    Mod+Ctrl+Up    { move-window-up; }
+    Mod+Ctrl+Right { move-column-right; }
+
+    Mod+Home { focus-column-first; }
+    Mod+End  { focus-column-last; }
+    Mod+Ctrl+Home { move-column-to-first; }
+    Mod+Ctrl+End  { move-column-to-last; }
+
+    // Monitors.
+    Mod+Shift+H     { focus-monitor-left; }
+    Mod+Shift+L     { focus-monitor-right; }
+    Mod+Shift+Ctrl+H { move-column-to-monitor-left; }
+    Mod+Shift+Ctrl+L { move-column-to-monitor-right; }
+
+    // Workspaces (vertical, per monitor).
+    Mod+Page_Down { focus-workspace-down; }
+    Mod+Page_Up   { focus-workspace-up; }
+    Mod+U         { focus-workspace-down; }
+    Mod+I         { focus-workspace-up; }
+    Mod+Ctrl+U    { move-column-to-workspace-down; }
+    Mod+Ctrl+I    { move-column-to-workspace-up; }
+
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+Ctrl+1 { move-column-to-workspace 1; }
+    Mod+Ctrl+2 { move-column-to-workspace 2; }
+    Mod+Ctrl+3 { move-column-to-workspace 3; }
+    Mod+Ctrl+4 { move-column-to-workspace 4; }
+    Mod+Ctrl+5 { move-column-to-workspace 5; }
+
+    // ---- Mouse wheel ----
+    // Mod+wheel = scroll the strip sideways. This is the one you asked for.
+    // Your mouse has no horizontal wheel, so Shift is the practical binding.
+    Mod+Shift+WheelScrollDown { focus-column-right; }
+    Mod+Shift+WheelScrollUp   { focus-column-left; }
+    Mod+WheelScrollRight      { focus-column-right; }
+    Mod+WheelScrollLeft       { focus-column-left; }
+
+    // Mod+plain wheel = up/down through workspaces.
+    Mod+WheelScrollDown      cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp        cooldown-ms=150 { focus-workspace-up; }
+
+    // Add Ctrl to drag the column along with you.
+    Mod+Ctrl+WheelScrollDown cooldown-ms=150 { move-column-to-workspace-down; }
+    Mod+Ctrl+WheelScrollUp   cooldown-ms=150 { move-column-to-workspace-up; }
+    Mod+Ctrl+Shift+WheelScrollDown { move-column-right; }
+    Mod+Ctrl+Shift+WheelScrollUp   { move-column-left; }
+
+    // Columns / sizing.
+    Mod+BracketLeft  { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+    Mod+Comma  { consume-window-into-column; }
+    Mod+Period { expel-window-from-column; }
+
+    Mod+R       hotkey-overlay-title="Cycle column width (1/3, 1/2, 2/3)" { switch-preset-column-width; }
+    // Fill whatever horizontal space the other visible columns aren't using.
+    // This is the "make these two share the screen properly" key.
+    Mod+Ctrl+F  hotkey-overlay-title="Expand column into free space" { expand-column-to-available-width; }
+    Mod+Shift+R { switch-preset-window-height; }
+    Mod+Ctrl+R  { reset-window-height; }
+    Mod+F       { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+    Mod+C       { center-column; }
+
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+
+    Mod+V       hotkey-overlay-title="Float / un-float window" { toggle-window-floating; }
+    Mod+Shift+V { switch-focus-between-floating-and-tiling; }
+    Mod+W       hotkey-overlay-title="Tab / un-tab this column" { toggle-column-tabbed-display; }
+
+    // Overview (the zoomed-out view of all workspaces).
+    Mod+O repeat=false { toggle-overview; }
+
+    // 60% keyboard: no Print key, so screenshots live on Mod+S.
+    Mod+Shift+S hotkey-overlay-title="Screenshot (select area)" { screenshot; }
+    Mod+Ctrl+S  hotkey-overlay-title="Screenshot whole screen" { screenshot-screen; }
+    Mod+Alt+S   hotkey-overlay-title="Screenshot focused window" { screenshot-window; }
+
+    // Print still works if a keyboard with one ever shows up.
+    Print      { screenshot; }
+    Ctrl+Print { screenshot-screen; }
+    Alt+Print  { screenshot-window; }
+
+    // Routed through loginctl so it exercises the same path swayidle uses.
+    Mod+Alt+L   hotkey-overlay-title="Lock screen" { spawn "loginctl" "lock-session"; }
+
+    Mod+Shift+E { quit; }
+    Mod+Shift+P { power-off-monitors; }
+}

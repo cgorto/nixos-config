@@ -1,0 +1,158 @@
+* {
+    font-family: "JetBrainsMono Nerd Font", sans-serif;
+    font-size: 13px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+window#waybar {
+    /* Kept translucent on purpose: niri blurs behind this layer
+       (see layer-rule namespace="^waybar$"). Opaque = no blur visible. */
+    background: rgba(24, 24, 28, 0.72);
+    color: #d8d8d8;
+}
+
+/* Left: workspaces */
+#workspaces {
+    margin: 4px 4px;
+}
+
+#workspaces button {
+    padding: 0 10px;
+    margin: 0 2px;
+    color: #6a6a6a;
+    background: transparent;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+#workspaces button:hover {
+    background: rgba(127, 200, 255, 0.15);
+    color: #d8d8d8;
+}
+
+#workspaces button.active {
+    color: #18181c;
+    background: #7fc8ff;
+}
+
+#workspaces button.urgent {
+    background: #ff6b6b;
+    color: #18181c;
+}
+
+#window {
+    margin-left: 8px;
+    color: #9a9a9a;
+}
+
+window#waybar.empty #window {
+    background: transparent;
+}
+
+/* Center: clock */
+#clock {
+    font-weight: bold;
+    color: #e8e8e8;
+    padding: 0 12px;
+}
+
+/* Right cluster */
+#cpu,
+#memory,
+#temperature,
+#custom-gpu,
+#network,
+#pulseaudio,
+#idle_inhibitor,
+#privacy,
+#tray {
+    padding: 0 10px;
+    margin: 4px 2px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+#cpu        { color: #a6e3a1; }
+#memory     { color: #f9e2af; }
+#temperature{ color: #fab387; }
+#custom-gpu { color: #74c7ec; }
+#network    { color: #89b4fa; }
+
+/* Width stability is handled by monospace padding in config.jsonc
+   ({usage:>3} etc), not by min-width - a pixel floor would still jump
+   once the text outgrew it. */
+
+#custom-gpu.warning  { color: #f9e2af; }
+#custom-gpu.critical { background: #ff6b6b; color: #18181c; }
+#custom-gpu.unavailable { color: #6a6a6a; }
+#pulseaudio { color: #cba6f7; }
+
+#temperature.critical {
+    background: #ff6b6b;
+    color: #18181c;
+}
+
+#pulseaudio.muted {
+    color: #6a6a6a;
+}
+
+#idle_inhibitor          { color: #94e2d5; }
+#idle_inhibitor.activated { background: #94e2d5; color: #18181c; }
+
+#privacy { color: #f38ba8; }
+
+/* --- audio drawer: click the speaker to slide out a volume bar --- */
+
+/* The group itself must not draw a second pill behind its children. */
+#audio {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+/* GtkScale needs explicit geometry or it collapses to nothing. */
+#pulseaudio-slider {
+    min-width: 110px;
+    margin: 4px 2px 4px 0;
+    padding: 0 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+#pulseaudio-slider trough {
+    min-width: 96px;
+    min-height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+#pulseaudio-slider highlight {
+    min-height: 6px;
+    border-radius: 3px;
+    background: #cba6f7;
+}
+
+#pulseaudio-slider slider {
+    min-width: 12px;
+    min-height: 12px;
+    margin: -4px;
+    border-radius: 50%;
+    background: #e8e8e8;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
+}
+
+#pulseaudio-slider slider:hover {
+    background: #ffffff;
+}
+
+tooltip {
+    background: rgba(24, 24, 28, 0.97);
+    border: 1px solid #7fc8ff;
+    border-radius: 8px;
+}
+
+tooltip label {
+    color: #d8d8d8;
+}

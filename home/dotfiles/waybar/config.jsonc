@@ -1,0 +1,148 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 34,
+    "spacing": 4,
+
+    "modules-left": ["niri/workspaces", "niri/window"],
+    "modules-center": ["clock"],
+    "modules-right": [
+        "tray",
+        "privacy",
+        "idle_inhibitor",
+        "group/audio",
+        "cpu",
+        "memory",
+        "temperature",
+        "custom/gpu",
+        "network"
+    ],
+
+    "niri/workspaces": {
+        "format": "{index}"
+    },
+
+    "niri/window": {
+        "format": "{}",
+        "max-length": 60,
+        "separate-outputs": true
+    },
+
+    "clock": {
+        "format": "{:%a %d %b  %H:%M}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "calendar": {
+            "mode": "month",
+            "format": {
+                "today": "<span color='#7fc8ff'><b>{}</b></span>"
+            }
+        }
+    },
+
+    // Numbers are right-padded to a fixed character count. The bar font
+    // is monospace, so this pins each pill width and the cluster stops
+    // shuffling sideways every tick.
+    "cpu": {
+        "format": "󰻠 {usage:>3}%",
+        "interval": 2,
+        "tooltip": true
+    },
+
+    "memory": {
+        "format": "󰍛 {percentage:>3}%",
+        "interval": 5,
+        "tooltip-format": "{used:0.1f}G / {total:0.1f}G"
+    },
+
+    "temperature": {
+        "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+        "input-filename": "temp1_input",
+        "interval": 2,
+        "critical-threshold": 90,
+        "tooltip-format": "CPU package: {temperatureC}°C",
+        "format": "󰔏 {temperatureC:>2}°C",
+        "format-critical": "󰸁 {temperatureC:>2}°C"
+    },
+
+    // Live throughput. The bandwidth* fields only update when "interval"
+    // is set - without it waybar waits on netlink events and the rate
+    // reads 0 while a transfer is in flight.
+    "network": {
+        "interval": 1,
+        "format-wifi": "󰤨 {bandwidthDownBytes:>8}  󰕒 {bandwidthUpBytes:>8}",
+        "format-ethernet": "󰇚 {bandwidthDownBytes:>8}  󰕒 {bandwidthUpBytes:>8}",
+        "format-disconnected": "󰤭 offline",
+        "tooltip-format-ethernet": "{ifname}  {ipaddr}/{cidr}\nvia {gwaddr}\n\n󰇚 {bandwidthDownBytes}/s   󰕒 {bandwidthUpBytes}/s",
+        "tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ifname}  {ipaddr}/{cidr}\n\n󰇚 {bandwidthDownBytes}/s   󰕒 {bandwidthUpBytes}/s",
+        "tooltip-format-disconnected": "No network"
+    },
+
+    // 3070 Ti. One nvidia-smi call per tick; see scripts/gpu.sh.
+    "custom/gpu": {
+        "exec": "$HOME/.config/waybar/scripts/gpu.sh",
+        "return-type": "json",
+        "interval": 3,
+        "tooltip": true
+    },
+
+    // Hover the speaker icon to slide out a draggable volume bar.
+    // NOTE: drawer "click-to-reveal": true is BROKEN in waybar 0.15.0 -
+    // the drawer never opens, even with no on-click handlers on the leader
+    // (verified by bisecting on a scratch bar). Hover reveal works; keep it.
+    "group/audio": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "audio-drawer",
+            "transition-left-to-right": false
+        },
+        "modules": ["pulseaudio", "pulseaudio/slider"]
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰝟 muted",
+        "format-icons": {
+            "headphone": "󰋋",
+            "headset": "󰋎",
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "tooltip-format": "{desc}\n{volume}%",
+        "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-click-middle": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",
+        "scroll-step": 5
+    },
+
+    "pulseaudio/slider": {
+        "min": 0,
+        "max": 100,
+        "orientation": "horizontal"
+    },
+
+    // Coffee cup = idle inhibitor. Click before a long build or a film so
+    // swayidle can't blank the screens (see ~/.config/swayidle/config).
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "󰅶",
+            "deactivated": "󰛊"
+        },
+        "tooltip-format-activated": "Idle inhibited - screen stays awake",
+        "tooltip-format-deactivated": "Idle normal - swayidle will lock/blank"
+    },
+
+    // Only appears while something is capturing screen/mic.
+    "privacy": {
+        "icon-size": 14,
+        "icon-spacing": 6,
+        "modules": [
+            { "type": "screenshare", "tooltip": true },
+            { "type": "audio-in", "tooltip": true }
+        ]
+    },
+
+    "tray": {
+        "icon-size": 16,
+        "spacing": 10
+    }
+}
