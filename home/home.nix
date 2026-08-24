@@ -63,6 +63,9 @@
     spotify
     blender
     audacity
+    kdePackages.dolphin
+    kdePackages.ark # archive support in dolphin
+    kdePackages.kio-extras # thumbnails, network browsing, etc.
     orca-slicer
     blockbench
     vintagestory
