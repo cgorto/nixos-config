@@ -46,10 +46,15 @@
   # ---- desktop: niri ----
   programs.niri.enable = true;
   security.polkit.enable = true;
-  services.greetd = {
-    enable = true;
-    settings.default_session.command =
-      "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd niri-session";
+  services.displayManager = {
+    defaultSession = "niri";
+    sddm = {
+      enable = true;
+      wayland.enable = true;
+      package = pkgs.kdePackages.sddm; # qt6 build, required by the theme
+      theme = "sddm-astronaut-theme";
+      extraPackages = [ pkgs.sddm-astronaut ];
+    };
   };
 
   # ---- audio ----
@@ -106,7 +111,7 @@
     vim
     wget
     efibootmgr # for phase-3 cleanup of bazzite boot entries
-  ];
+  ] ++ [ pkgs.sddm-astronaut ]; # theme resources for sddm
 
   system.stateVersion = "25.05"; # do not change after install
 }
