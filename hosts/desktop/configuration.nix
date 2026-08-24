@@ -74,6 +74,7 @@
     isNormalUser = true;
     uid = 1000; # must match the preserved home subvolume
     extraGroups = [ "wheel" "networkmanager" ];
+    initialPassword = "changeme"; # for VM testing + first boot; run `passwd` after install!
     shell = pkgs.bash;
   };
 
