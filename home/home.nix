@@ -35,8 +35,10 @@
 
   programs.git = {
     enable = true;
-    userName = "Christian Gorton";
-    userEmail = "gorto005@gmail.com";
+    settings.user = {
+      name = "Christian Gorton";
+      email = "gorto005@gmail.com";
+    };
   };
 
   programs.direnv = {
@@ -44,7 +46,10 @@
     nix-direnv.enable = true; # cached devshells: instant `cd` into projects
   };
 
-  programs.firefox.enable = true; # native; copy profile from .var/app after install
+  programs.firefox = {
+    enable = true; # native; copy profile from .var/app after install
+    configPath = ".mozilla/firefox"; # keep classic path; silences stateVersion warning
+  };
 
   home.packages = with pkgs; [
     # cli
