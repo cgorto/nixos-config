@@ -1,6 +1,20 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 {
   imports = [ ./gaming.nix ];
+
+  # ---- VM-only overrides (nixos-rebuild build-vm); no effect on the real system ----
+  virtualisation.vmVariant = {
+    virtualisation = {
+      memorySize = 6144;
+      cores = 4;
+      qemu.options = [
+        "-device virtio-vga-gl"
+        "-display gtk,gl=on,show-cursor=on"
+      ];
+    };
+    # no GPU in the VM; use virtio instead of nvidia
+    services.xserver.videoDrivers = lib.mkForce [ "modesetting" ];
+  };
 
   # ---- boot ----
   boot.loader.systemd-boot = {
