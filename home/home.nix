@@ -56,10 +56,19 @@
     ripgrep
     fd
     gh
-    # desktop
+    # desktop -- everything niri config spawns or binds must be here
+    waybar
+    fuzzel
+    mako
+    foot # fallback terminal (Mod+Shift+Return)
     swaylock
     swayidle
     swaybg # spawned by niri config for wallpaper
+    grim
+    slurp
+    wl-clipboard
+    playerctl
+    brightnessctl
     xwayland-satellite # xwayland support for niri
     obsidian
     vlc

@@ -15,6 +15,12 @@
     };
     # no GPU in the VM; use virtio instead of nvidia
     services.xserver.videoDrivers = lib.mkForce [ "modesetting" ];
+    # ssh into the vm for debugging: ssh -p 2222 gorto@localhost
+    virtualisation.forwardPorts = [
+      { from = "host"; host.port = 2222; guest.port = 22; }
+    ];
+    services.openssh.enable = true;
+    services.openssh.settings.PasswordAuthentication = true;
   };
 
   # ---- boot ----

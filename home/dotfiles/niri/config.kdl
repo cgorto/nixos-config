@@ -281,7 +281,7 @@ binds {
     Mod+Shift+Return hotkey-overlay-title="Terminal (fallback): foot" { spawn "foot"; }
     Mod+D        hotkey-overlay-title="Launcher: fuzzel" { spawn "fuzzel"; }
     Mod+Q        { close-window; }
-    Mod+B        hotkey-overlay-title="Browser: Chrome" { spawn "flatpak" "run" "com.google.Chrome"; }
+    Mod+B        hotkey-overlay-title="Browser: Firefox" { spawn "firefox"; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
