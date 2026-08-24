@@ -8,8 +8,9 @@
       memorySize = 6144;
       cores = 4;
       qemu.options = [
-        "-device virtio-vga-gl"
-        "-display gtk,gl=on,show-cursor=on"
+        # no gl: host GL isn't reachable from inside the distrobox
+        "-device virtio-vga"
+        "-display gtk,show-cursor=on"
       ];
     };
     # no GPU in the VM; use virtio instead of nvidia
