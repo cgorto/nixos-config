@@ -41,6 +41,11 @@
     };
   };
 
+  programs.gh = {
+    enable = true;
+    gitCredentialHelper.enable = true; # writes the nix-store gh path into git config
+  };
+
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true; # cached devshells: instant `cd` into projects
@@ -55,7 +60,6 @@
     # cli
     ripgrep
     fd
-    gh
     # desktop -- everything niri config spawns or binds must be here
     waybar
     fuzzel
