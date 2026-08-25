@@ -23,6 +23,11 @@
     services.openssh.settings.PasswordAuthentication = true;
   };
 
+  services.openssh = {
+    enable = true;
+    settings.PasswordAuthentication = false;
+  };
+
   # ---- boot ----
   boot.loader.systemd-boot = {
     enable = true;

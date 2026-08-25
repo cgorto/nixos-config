@@ -86,6 +86,7 @@
     zed-editor
     # dev (project-specific stuff goes in per-project flakes instead)
     helix
+    pi-coding-agent # pi agent harness (badlogic/pi-mono)
     ghostty
   ];
 }
