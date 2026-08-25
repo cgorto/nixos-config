@@ -4,6 +4,16 @@
   home.homeDirectory = "/home/gorto";
   home.stateVersion = "25.05"; # do not change after install
 
+  # cursor theme for all toolkits (gtk, x11/xwayland, env vars); niri config sets the same
+  home.pointerCursor = {
+    enable = true;
+    package = pkgs.kdePackages.breeze;
+    name = "breeze_cursors";
+    size = 24;
+    gtk.enable = true;
+    x11.enable = true;
+  };
+
   # ---- dotfiles carried over from bazzite (copies live in this repo) ----
   xdg.configFile = {
     "niri".source = ./dotfiles/niri;

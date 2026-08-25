@@ -44,6 +44,13 @@ output "HDMI-A-1" {
     position x=0 y=170
 }
 
+// Cursor theme + size. niri exports XCURSOR_THEME/XCURSOR_SIZE to spawned apps
+// and scales the cursor per output (24 logical px -> 24 on HDMI-A-1, 36 on DP-1).
+cursor {
+    xcursor-theme "breeze_cursors"
+    xcursor-size 24
+}
+
 layout {
     gaps 8
     center-focused-column "never"
