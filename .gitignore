@@ -1,0 +1,6 @@
+# nix build outputs
+result
+result-*
+
+# VM disk images from nixos-rebuild build-vm
+*.qcow2
